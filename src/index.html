@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<!-- Declara que este archivo es HTML5 -->
+<html lang="es">
+<!-- Raíz del documento; el idioma es español -->
+<head>
+    <!-- Datos de configuración de la página (no se ven en pantalla) -->
+    <meta charset="UTF-8">
+    <!-- Codificación de caracteres: UTF-8 permite tildes, ñ y emojis -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Hace que la página se adapte al ancho del celular -->
+    <title>Chat UNINTEP | Sistemas Operativos</title>
+    <!-- Texto que aparece en la pestaña del navegador -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Abre la conexión con Google Fonts con anticipación para que cargue más rápido -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Igual que la anterior, pero para el servidor que entrega los archivos de letra -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Carga las tipografías Inter y JetBrains Mono (si no hay internet se usa otra letra y todo funciona igual) -->
+
+    <style>
+        /* ===== ESTILOS DE LA PÁGINA (cada bloque lleva su comentario) ===== */
+        /* Variables de color, bordes, radios y sombras que se reutilizan en toda la página */
+        :root {
+            --bg-base: #0a0d14;
+            --bg-surface: rgba(17, 24, 39, 0.75);
+            --bg-card: rgba(30, 41, 59, 0.6);
+            --bg-input: rgba(15, 23, 42, 0.8);
+            
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(99, 102, 241, 0.5);
+            --border-highlight: rgba(129, 140, 248, 0.2);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            
+            --shadow-subtle: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 35px -5px var(--primary-glow);
+        }
+
+        /* Reinicia márgenes y rellenos; el tamaño de cada caja incluye su borde y relleno */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Fondo oscuro con degradados, tipografía Inter y disposición en columna centrada */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 60%);
+            background-attachment: fixed;
+        }
+
+        /* Contenedor principal: ancho máximo, alto de toda la pantalla y elementos en columna */
+        .app-container {
+            width: 100%;
+            max-width: 1100px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            gap: 14px;
+        }
+
+        /* Cabecera con efecto vidrio (fondo translúcido y desenfoque) */
+        header.app-header {
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-subtle);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        /* Agrupa el logo y el título, uno al lado del otro */
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* Cuadro con degradado que muestra las letras SO */
+        .brand-logo-badge {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: white;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+            letter-spacing: -0.5px;
+        }
+
+        /* Título principal de la cabecera */
+        .brand-title h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Subtítulo con letra monoespaciada */
+        .brand-title p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Fila que agrupa las etiquetas de TCP, HTTP y estado */
+        .protocol-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Forma base de las etiquetas redondeadas */
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        /* Color de la etiqueta del puerto TCP (cian) */
+        .badge-tcp {
+            background: rgba(6, 182, 212, 0.12);
+            color: #22d3ee;
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+
+        /* Color de la etiqueta del puerto HTTP (violeta) */
+        .badge-http {
+            background: rgba(99, 102, 241, 0.12);
+            color: #a5b4fc;
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Color de la etiqueta de estado cuando hay conexión (verde) */
+        .badge-status-online {
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* Puntito que parpadea dentro de cada etiqueta */
+        .dot-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: currentColor;
+            box-shadow: 0 0 8px currentColor;
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        /* Animación del puntito: se apaga y se encoge suavemente */
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* Barra con el alias y los botones */
+        .toolbar-bar {
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Agrupa el avatar y el campo del alias */
+        .user-config {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Círculo con las iniciales del alias */
+        .avatar-tag {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Campo de texto pequeño para escribir el alias */
+        .input-inline {
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.2s ease;
+            width: 140px;
+        }
+
+        /* Resalta el campo del alias cuando está seleccionado */
+        .input-inline:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        /* Agrupa los botones de la barra */
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Estilo de los botones de la barra (Arquitectura, Vaciar, Sonido) */
+        .btn-toolbar {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Cambia el botón al pasar el mouse por encima */
+        .btn-toolbar:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Tarjeta que contiene el chat y ocupa todo el espacio disponible */
+        .chat-main-card {
+            flex: 1;
+            min-height: 0;
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-subtle);
+            overflow: hidden;
+        }
+
+        /* Zona donde aparecen los mensajes, con barra de desplazamiento vertical */
+        .chat-stream {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scroll-behavior: smooth;
+        }
+
+        /* Ancho de la barra de desplazamiento */
+        .chat-stream::-webkit-scrollbar {
+            width: 6px;
+        }
+        /* Fondo del carril de la barra de desplazamiento */
+        .chat-stream::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        /* Color de la barrita que se arrastra */
+        .chat-stream::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+        /* Color de la barrita al pasar el mouse */
+        .chat-stream::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Fila de un mensaje: aparece con una animación de entrada */
+        .msg-row {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+            animation: fadeInSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Animación de entrada: el mensaje sube un poco mientras se hace visible */
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Línea con el nombre, el origen y la hora del mensaje */
+        .msg-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* Nombre del usuario dentro de esa línea */
+        .msg-meta .user-name {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Etiqueta pequeña que indica por dónde llegó el mensaje */
+        .msg-badge {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Color de la etiqueta para mensajes que llegaron por TCP */
+        .badge-origin-tcp {
+            background: rgba(6, 182, 212, 0.15);
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        /* Color de la etiqueta para mensajes que llegaron por la web */
+        .badge-origin-web {
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        /* Color de la etiqueta para mensajes de la consola del servidor */
+        .badge-origin-sys {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Forma base de la burbuja de texto */
+        .msg-bubble {
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            font-size: 0.92rem;
+            line-height: 1.45;
+            word-break: break-word;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            border: 1px solid transparent;
+        }
+
+        /* Burbuja de mensajes TCP: letra monoespaciada y borde cian a la izquierda */
+        .msg-tcp .msg-bubble {
+            background: rgba(15, 23, 42, 0.85);
+            border-color: rgba(6, 182, 212, 0.25);
+            color: #e2e8f0;
+            font-family: 'JetBrains Mono', monospace;
+            border-left: 3px solid #06b6d4;
+        }
+
+        /* Burbuja de mensajes web: borde violeta a la izquierda */
+        .msg-web .msg-bubble {
+            background: rgba(30, 41, 59, 0.85);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #f8fafc;
+            border-left: 3px solid #6366f1;
+        }
+
+        /* Los mensajes propios se alinean a la derecha */
+        .msg-self {
+            align-self: flex-end;
+        }
+        /* Burbuja de los mensajes propios con degradado azul */
+        .msg-self .msg-bubble {
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border-left: none;
+            border-right: 3px solid #818cf8;
+        }
+        /* La línea de datos de los mensajes propios también va a la derecha */
+        .msg-self .msg-meta {
+            justify-content: flex-end;
+        }
+
+        /* Los avisos del sistema van centrados */
+        .msg-system {
+            align-self: center;
+            max-width: 95%;
+        }
+        /* Burbuja de avisos: forma de píldora en tono ámbar */
+        .msg-system .msg-bubble {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            color: #fde68a;
+            font-size: 0.8rem;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            text-align: center;
+        }
+
+        /* Panel inferior donde se escribe */
+        .chat-input-panel {
+            padding: 14px 20px;
+            background: rgba(15, 23, 42, 0.6);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Fila con el campo de texto y el botón de enviar */
+        .composer-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Campo de texto del mensaje */
+        .composer-input {
+            flex: 1;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        /* Resalta el campo cuando está seleccionado */
+        .composer-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        /* Botón de enviar con degradado y sombra */
+        .btn-send {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        /* El botón se eleva un poco al pasar el mouse */
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        }
+
+        /* El botón vuelve a su sitio mientras se hace clic */
+        .btn-send:active {
+            transform: translateY(0);
+        }
+
+        /* Fila de ayudas: atajos rápidos y recordatorio de la tecla Enter */
+        .composer-hints {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            padding: 0 4px;
+        }
+
+        /* Agrupa los atajos de texto */
+        .quick-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* Estilo de cada atajo de texto */
+        .chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            padding: 2px 8px;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        /* Cambia el atajo al pasar el mouse */
+        .chip:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--text-primary);
+        }
+
+        /* Capa oscura que cubre toda la pantalla detrás de la ventana emergente (oculta por defecto) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        /* Ventana emergente de la arquitectura */
+        .modal-card {
+            background: #111827;
+            border: 1px solid var(--border-highlight);
+            border-radius: var(--radius-lg);
+            max-width: 750px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 26px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        /* Encabezado de la ventana con el título y el botón de cerrar */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 12px;
+        }
+
+        /* Título de la ventana */
+        .modal-header h2 {
+            font-size: 1.25rem;
+            color: #fff;
+        }
+
+        /* Botón de cerrar (la ×) */
+        .btn-close-modal {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        /* La × se vuelve blanca al pasar el mouse */
+        .btn-close-modal:hover {
+            color: white;
+        }
+
+        /* Recuadro con el diagrama dibujado con caracteres */
+        .arch-diagram {
+            background: #030712;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: #38bdf8;
+            overflow-x: auto;
+            white-space: pre;
+            margin-bottom: 16px;
+        }
+
+        /* Subtítulos de la ventana emergente */
+        .arch-section h3 {
+            font-size: 0.95rem;
+            color: #a5b4fc;
+            margin-top: 14px;
+            margin-bottom: 6px;
+        }
+
+        /* Texto y listas de la ventana emergente */
+        .arch-section p, .arch-section ul {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Sangría de las listas */
+        .arch-section ul {
+            padding-left: 20px;
+            margin-top: 6px;
+        }
+
+        /* Ajustes para pantallas pequeñas (celulares): menos márgenes y sin las etiquetas de puertos */
+        @media (max-width: 768px) {
+            /* En pantalla pequeña: menos margen y menos separación */
+            .app-container {
+                padding: 8px;
+                gap: 8px;
+            }
+            /* En pantalla pequeña: se ocultan las etiquetas de los puertos */
+            .protocol-badges {
+                display: none;
+            }
+            /* En pantalla pequeña: barra más compacta */
+            .toolbar-bar {
+                padding: 8px 12px;
+            }
+            /* En pantalla pequeña: campo de alias más angosto */
+            .input-inline {
+                width: 110px;
+            }
+            /* En pantalla pequeña: los mensajes usan casi todo el ancho */
+            .msg-row {
+                max-width: 95%;
+            }
+        }
+    
+    </style>
+    <!-- Fin de los estilos -->
+</head>
+<!-- Fin de la cabecera técnica -->
+<body>
+    <!-- Todo lo que se ve en la página va dentro del body -->
+
+    <div class="app-container">
+        <!-- Caja principal que organiza la página en columna -->
+
+        <header class="app-header">
+            <!-- ===== CABECERA: logo, título y etiquetas de puertos ===== -->
+            <div class="brand-section">
+                <!-- Grupo del logo y el título -->
+                <div class="brand-logo-badge">SO</div>
+                <!-- Cuadro con las letras SO (Sistemas Operativos) -->
+                <div class="brand-title">
+                    <!-- Contenedor de los textos del título -->
+                    <h1>Chat Concurrente UNINTEP</h1>
+                    <!-- Título principal -->
+                    <p>Sistemas Operativos &bull; WinSock2 y Hilos Win32</p>
+                    <!-- Subtítulo; &bull; dibuja un punto separador -->
+                </div>
+                <!-- Fin del contenedor de textos -->
+            </div>
+            <!-- Fin del grupo del logo -->
+
+            <div class="protocol-badges">
+                <!-- Grupo de etiquetas informativas -->
+                <div class="badge-pill badge-tcp" title="Chat TCP: un hilo Win32 por cada usuario">
+                    <!-- Etiqueta del puerto TCP; el title es el texto que sale al pasar el mouse -->
+                    <span class="dot-indicator"></span>
+                    <!-- Puntito que parpadea -->
+                    <span>TCP :6000</span>
+                    <!-- Texto de la etiqueta -->
+                </div>
+                <!-- Fin de la etiqueta TCP -->
+                <div class="badge-pill badge-http" title="Servidor web embebido en C (GET y POST)">
+                    <!-- Etiqueta del puerto HTTP -->
+                    <span class="dot-indicator"></span>
+                    <!-- Puntito que parpadea -->
+                    <span>HTTP :9090</span>
+                    <!-- Texto de la etiqueta -->
+                </div>
+                <!-- Fin de la etiqueta HTTP -->
+                <div class="badge-pill badge-status-online" id="statusIndicator">
+                    <!-- Etiqueta de estado; el JavaScript la cambia a verde o roja -->
+                    <span class="dot-indicator"></span>
+                    <!-- Puntito que parpadea -->
+                    <span id="statusText">EN LINEA</span>
+                    <!-- Texto del estado; el JavaScript lo reemplaza según haya o no conexión -->
+                </div>
+                <!-- Fin de la etiqueta de estado -->
+            </div>
+            <!-- Fin del grupo de etiquetas -->
+        </header>
+        <!-- Fin de la cabecera -->
+
+        <div class="toolbar-bar">
+            <!-- ===== BARRA DE HERRAMIENTAS: alias y botones ===== -->
+            <div class="user-config">
+                <!-- Grupo del avatar y el alias -->
+                <div class="avatar-tag" id="userAvatar">WU</div>
+                <!-- Círculo con las iniciales; el JavaScript las actualiza al cambiar el alias -->
+                <label for="userNick" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Tu alias:</label>
+                <!-- Texto que acompaña al campo (for lo conecta con el campo de abajo) -->
+                <input type="text" id="userNick" class="input-inline" value="WebUser" placeholder="Tu alias" maxlength="18">
+                <!-- Campo del alias: máximo 18 letras y valor inicial WebUser -->
+            </div>
+            <!-- Fin del grupo del alias -->
+
+            <div class="toolbar-actions">
+                <!-- Grupo de botones -->
+                <button id="architectureBtn" class="btn-toolbar" onclick="abrirModal()">
+                    <!-- Botón que abre la ventana de arquitectura al hacer clic -->
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                    <!-- Ícono dibujado con SVG (un cuadro dividido) -->
+                    Arquitectura
+                    <!-- Texto del botón -->
+                </button>
+                <!-- Fin del botón de arquitectura -->
+                <button id="clearBtn" class="btn-toolbar" onclick="limpiarChat()">
+                    <!-- Botón que vacía la pantalla del chat -->
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    <!-- Ícono de papelera dibujado con SVG -->
+                    Vaciar
+                    <!-- Texto del botón -->
+                </button>
+                <!-- Fin del botón de vaciar -->
+                <button id="toggleSoundBtn" class="btn-toolbar" onclick="toggleSonido()">
+                    <!-- Botón que activa o desactiva el sonido de aviso -->
+                    <span id="soundIcon">🔔 Sonido</span>
+                    <!-- Texto que el JavaScript cambia entre Sonido y Silencio -->
+                </button>
+                <!-- Fin del botón de sonido -->
+            </div>
+            <!-- Fin del grupo de botones -->
+        </div>
+        <!-- Fin de la barra de herramientas -->
+
+        <main class="chat-main-card">
+            <!-- ===== ZONA DEL CHAT ===== -->
+            <div id="chatBox" class="chat-stream" role="log" aria-live="polite">
+                <!-- Aquí se agregan los mensajes; role/aria-live ayudan a lectores de pantalla -->
+                <div class="msg-row msg-system">
+                    <!-- Aviso de bienvenida -->
+                    <div class="msg-bubble">
+                        <!-- Burbuja del aviso -->
+                        ⚡ Conectado al servidor UNINTEP: chat TCP en el puerto 6000 y web en el 9090. Los mensajes se actualizan solos.
+                        <!-- Texto de bienvenida -->
+                    </div>
+                    <!-- Fin de la burbuja -->
+                </div>
+                <!-- Fin del aviso -->
+            </div>
+            <!-- Fin de la zona de mensajes -->
+
+            <div class="chat-input-panel">
+                <!-- ===== PANEL PARA ESCRIBIR ===== -->
+                <div class="composer-row">
+                    <!-- Fila con el campo y el botón -->
+                    <input
+                        type="text"
+                        id="msgInput"
+                        class="composer-input"
+                        placeholder="Escribe aqui tu mensaje para todos..."
+                        autocomplete="off"
+                        maxlength="400"
+                    >
+                    <!-- Campo del mensaje: texto, sin autocompletar y máximo 400 caracteres -->
+                    <button id="sendBtn" class="btn-send" onclick="enviarMensaje()">
+                        <!-- Botón que envía el mensaje -->
+                        <span>Mandar</span>
+                        <!-- Texto del botón -->
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        <!-- Ícono de avioncito de papel dibujado con SVG -->
+                    </button>
+                    <!-- Fin del botón de enviar -->
+                </div>
+                <!-- Fin de la fila del campo -->
+                <div class="composer-hints">
+                    <!-- Fila de ayudas -->
+                    <div class="quick-chips">
+                        <!-- Grupo de atajos de texto -->
+                        <span class="chip" onclick="insertarTexto('👋 Hola a todos desde la pagina web')">👋 Hola</span>
+                        <!-- Atajo: al hacer clic escribe ese texto en el campo -->
+                        <span class="chip" onclick="insertarTexto('📡 Probando que el servidor atiende a varios usuarios a la vez')">📡 Prueba</span>
+                        <!-- Atajo de prueba de concurrencia -->
+                        <span class="chip" onclick="insertarTexto('🚀 Saludo para quienes estan conectados con Netcat')">🚀 Netcat</span>
+                        <!-- Atajo con saludo para los usuarios de Netcat -->
+                    </div>
+                    <!-- Fin del grupo de atajos -->
+                    <span>Presiona <strong>Enter</strong> para mandar</span>
+                    <!-- Recordatorio de la tecla Enter -->
+                </div>
+                <!-- Fin de la fila de ayudas -->
+            </div>
+            <!-- Fin del panel de escritura -->
+        </main>
+        <!-- Fin de la zona del chat -->
+    </div>
+    <!-- Fin de la caja principal -->
+
+    <div id="architectureModal" class="modal-overlay" onclick="cerrarModalClickAfuera(event)">
+        <!-- ===== VENTANA EMERGENTE DE ARQUITECTURA (oculta hasta que se abre) ===== -->
+        <div class="modal-card">
+            <!-- Tarjeta de la ventana -->
+            <div class="modal-header">
+                <!-- Encabezado con título y botón de cerrar -->
+                <h2>Como esta construido el servidor</h2>
+                <!-- Título de la ventana -->
+                <button class="btn-close-modal" onclick="cerrarModal()">&times;</button>
+                <!-- Botón de cerrar; &times; dibuja una × -->
+            </div>
+            <!-- Fin del encabezado -->
+
+            <div class="arch-diagram">
++--------------------------------------------------------------------------------+
+|   SERVIDOR MULTIHILO EN C  (API WinSock2 de Windows)                           |
+|                                                                                |
+|   PUERTO TCP 6000                         PUERTO HTTP 9090                     |
+|   (terminal: cliente.exe / ncat)          (navegador web / API REST)           |
+|   - Un hilo Win32 por usuario             - GET  /         -> pagina web       |
+|   - Candado: CRITICAL_SECTION             - GET  /mensajes -> historial JSON   |
+|   - Reparto de mensajes (Broadcast)       - POST /enviar   -> mensaje nuevo    |
++--------------------------------------------------------------------------------+
+                                     |
+                  [MEMORIA COMPARTIDA PROTEGIDA POR CANDADOS]
+            lockClients (lista de sockets) <---> lockMsgs (historial)
+            </div>
+            <!-- Fin del diagrama (las líneas de arriba están dibujadas con caracteres) -->
+
+            <div class="arch-section">
+                <!-- Explicaciones debajo del diagrama -->
+                <h3>1. Candados para evitar condiciones de carrera</h3>
+                <!-- Subtítulo -->
+                <p>El servidor usa <code>CRITICAL_SECTION</code> para que solo un hilo a la vez toque los datos compartidos:</p>
+                <!-- Introducción -->
+                <ul>
+                    <!-- Lista de los dos candados -->
+                    <li><code>lockClients</code>: cuida el arreglo de sockets conectados (máximo 10) cuando entran o salen usuarios al mismo tiempo.</li>
+                    <!-- Candado de la lista de clientes -->
+                    <li><code>lockMsgs</code>: cuida el historial de los últimos 200 mensajes, que leen las peticiones GET y escriben el chat TCP, el POST y la consola del servidor.</li>
+                    <!-- Candado del historial -->
+                </ul>
+                <!-- Fin de la lista -->
+
+                <h3>2. Publicación en Internet</h3>
+                <!-- Subtítulo -->
+                <p>Para que otras personas fuera de la red se conecten hay dos caminos:</p>
+                <!-- Introducción -->
+                <ul>
+                    <!-- Lista de rutas -->
+                    <li><strong>Ruta A (tradicional):</strong> reenviar los puertos TCP 6000 y 9090 en el router y usar DuckDNS para tener un nombre fijo.</li>
+                    <!-- Ruta A -->
+                    <li><strong>Ruta B (CGNAT / túneles):</strong> usar <code>ngrok tcp 6000</code> y <code>ngrok http 9090</code>, o túneles de Cloudflare.</li>
+                    <!-- Ruta B -->
+                </ul>
+                <!-- Fin de la lista -->
+            </div>
+            <!-- Fin de las explicaciones -->
+        </div>
+        <!-- Fin de la tarjeta -->
+    </div>
+    <!-- Fin de la ventana emergente -->
+
+    <script>
+        // ===== LÓGICA DE LA PÁGINA (JavaScript) =====
+
+        // Dirección del servidor: si la página se abrió desde el propio servidor se usa su dirección;
+        // si se abrió como archivo (file://) se apunta a localhost:9090.
+        const SERVER_URL = window.location.origin.startsWith("http")   // ¿la página viene de http o https?
+            ? window.location.origin                                    // sí: usa esa misma dirección
+            : "http://localhost:9090";                                  // no: usa el servidor local
+
+        let ultimoIdVisto = 0;          // id del último mensaje ya dibujado (evita repetir mensajes)
+        let sonidoActivado = true;      // indica si el aviso sonoro está encendido
+        let audioCtx = null;            // motor de audio del navegador (se crea la primera vez que se necesita)
+        let autoScroll = true;          // si es true, la vista baja sola al llegar mensajes nuevos
+
+        // ----- RETO: WebSocket (RFC 6455) -----
+        // Dirección del WebSocket: http -> ws, https -> wss (así también funciona detrás de ngrok/Cloudflare)
+        const WS_URL = SERVER_URL.replace(/^http/, 'ws') + '/ws';
+        let ws = null;                  // objeto WebSocket actual (null si no hay conexión)
+        let pollTimer = null;           // temporizador del polling de respaldo (null = apagado)
+        let reconectarTimer = null;     // temporizador del reintento de conexión
+        let esperandoHistorial = false; // true mientras se descarga el historial inicial
+        let colaWs = [];                // mensajes que llegan por WebSocket mientras se descarga el historial
+
+        // Referencias a los elementos de la página (se buscan una sola vez por su id)
+        const chatBox = document.getElementById('chatBox');                     // zona de mensajes
+        const msgInput = document.getElementById('msgInput');                   // campo de texto del mensaje
+        const sendBtn = document.getElementById('sendBtn');                     // botón de enviar
+        const userNick = document.getElementById('userNick');                   // campo del alias
+        const userAvatar = document.getElementById('userAvatar');               // círculo con las iniciales
+        const statusIndicator = document.getElementById('statusIndicator');     // etiqueta de estado
+        const statusText = document.getElementById('statusText');               // texto de la etiqueta de estado
+        const soundIcon = document.getElementById('soundIcon');                 // texto del botón de sonido
+        const archModal = document.getElementById('architectureModal');         // ventana de arquitectura
+
+        // Cada vez que se escribe en el alias, se actualizan las iniciales del avatar
+        userNick.addEventListener('input', () => {                              // se ejecuta con cada tecla
+            const val = userNick.value.trim() || 'WU';                          // alias sin espacios; si está vacío usa WU
+            userAvatar.textContent = val.substring(0, 2).toUpperCase();         // toma las 2 primeras letras en mayúscula
+        });                                                                     // fin del evento
+
+        // Enviar el mensaje al presionar Enter dentro del campo de texto
+        msgInput.addEventListener('keydown', (e) => {                           // se ejecuta al presionar una tecla
+            if (e.key === 'Enter' && !e.shiftKey) {                             // Enter solo (sin Shift)
+                e.preventDefault();                                             // evita el comportamiento por defecto de la tecla
+                enviarMensaje();                                                // manda el mensaje
+            }                                                                   // fin del if
+        });                                                                     // fin del evento
+
+        // Genera un tono corto de aviso con la Web Audio API (no necesita archivos de sonido)
+        function reproducirTonoNotificacion() {                                 // función del aviso sonoro
+            if (!sonidoActivado) return;                                        // si el sonido está apagado, no hace nada
+            try {                                                               // try evita que un error de audio rompa la página
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();     // crea el motor de audio una vez
+                if (audioCtx.state === 'suspended') audioCtx.resume();          // algunos navegadores lo dejan en pausa hasta que el usuario interactúa
+
+                const osc = audioCtx.createOscillator();                        // oscilador: genera la onda del sonido
+                const gain = audioCtx.createGain();                             // control de volumen
+                osc.type = 'sine';                                              // tipo de onda suave
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);     // empieza en la nota Re (D5)
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);    // sube a La (A5) en 0,1 s
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);           // volumen inicial muy bajo
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);     // el volumen se apaga en 0,18 s
+                osc.connect(gain);                                              // conecta el oscilador al control de volumen
+                gain.connect(audioCtx.destination);                             // conecta el volumen a los parlantes
+                osc.start();                                                    // empieza a sonar
+                osc.stop(audioCtx.currentTime + 0.18);                          // se detiene a los 0,18 s
+            } catch (e) {                                                       // si falla el audio
+                // no se hace nada: el aviso sonoro es opcional
+            }                                                                   // fin del try/catch
+        }                                                                       // fin de reproducirTonoNotificacion
+
+        // Pide el historial al servidor (GET /mensajes); se repite cada 1,5 segundos
+        async function cargarMensajes() {                                       // async permite usar await
+            try {                                                               // captura errores de red
+                const res = await fetch(`${SERVER_URL}/mensajes`, {             // pide la lista de mensajes
+                    cache: 'no-store',                                          // evita usar respuestas guardadas en caché
+                    headers: { 'Accept': 'application/json' }                   // indica que espera JSON
+                });                                                             // fin de la petición
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);             // si el servidor responde con error, se lanza una excepción
+
+                const data = await res.json();                                  // convierte la respuesta JSON en un arreglo de objetos
+                actualizarEstadoOnline(true);                                   // marca el estado como "en línea"
+
+                if (Array.isArray(data) && data.length > 0) {                   // si llegó una lista con mensajes
+                    renderizarMensajes(data);                                   // dibuja los que sean nuevos
+                }                                                               // fin del if
+            } catch (err) {                                                     // si no se pudo contactar al servidor
+                actualizarEstadoOnline(false);                                  // marca el estado como "sin servidor"
+                console.warn("[Consulta] No hubo respuesta del servidor en C:", err.message);   // deja el detalle en la consola del navegador
+            }                                                                   // fin del try/catch
+        }                                                                       // fin de cargarMensajes
+
+        // Dibuja en pantalla solo los mensajes que todavía no se habían mostrado
+        function renderizarMensajes(listaMensajes) {                            // recibe el arreglo de mensajes
+            let hayNuevos = false;                                              // indica si se dibujó algún mensaje nuevo
+            const miNick = userNick.value.trim().toLowerCase();                 // mi alias en minúsculas, para saber cuáles mensajes son míos
+
+            // Si el servidor se reinició, los id vuelven a empezar desde 1: se reinicia la vista
+            const maxId = listaMensajes.reduce((mx, it) => Math.max(mx, it.id || 0), 0);    // busca el id más grande recibido
+            if (maxId > 0 && maxId < ultimoIdVisto) {                           // si es menor que el último visto, el servidor se reinició
+                ultimoIdVisto = 0;                                              // se vuelve a empezar a contar
+                chatBox.innerHTML = '';                                         // se limpia la pantalla
+            }                                                                   // fin del if
+
+            listaMensajes.forEach(item => {                                     // recorre cada mensaje recibido
+                const msgId = item.id || 0;                                     // id del mensaje (0 si no trae)
+                if (msgId > 0 && msgId <= ultimoIdVisto) return;                // si ya se mostró, lo salta
+
+                hayNuevos = true;                                               // hay al menos un mensaje nuevo
+                if (msgId > ultimoIdVisto) ultimoIdVisto = msgId;               // recuerda este id como el último visto
+
+                const row = document.createElement('div');                      // crea el contenedor del mensaje
+                row.className = 'msg-row';                                      // le pone la clase base de fila
+
+                const usuario = item.usuario || 'Sin nombre';                   // nombre de quien escribió
+                const texto = item.texto || '';                                 // contenido del mensaje
+                const hora = item.hora || new Date().toLocaleTimeString();      // hora del servidor (o la del navegador si falta)
+                const origen = (item.origen || 'TCP').toUpperCase();            // de dónde vino: TCP, WEB o ADMIN
+                const esPropio = (origen === 'WEB' && usuario.toLowerCase() === miNick);    // es mío si vino por la web con mi alias
+
+                if (origen === 'SISTEMA' || usuario.toLowerCase() === 'sistema') {  // mensajes del sistema
+                    row.className += ' msg-system';                             // se dibuja como aviso centrado
+                    row.innerHTML = `<div class="msg-bubble">🛡️ [${hora}] ${escaparHtml(texto)}</div>`;     // texto escapado por seguridad
+                } else {                                                        // mensajes de usuarios
+                    let claseTipo = 'msg-tcp';                                  // por defecto se ve como mensaje TCP
+                    let badgeClase = 'badge-origin-tcp';                        // color de la etiqueta TCP
+                    let badgeLabel = 'TCP :6000';                               // texto de la etiqueta TCP
+
+                    if (origen === 'WEB') {                                     // si llegó por la web
+                        claseTipo = 'msg-web';                                  // estilo de mensaje web
+                        badgeClase = 'badge-origin-web';                        // color de la etiqueta web
+                        badgeLabel = 'HTTP :9090';                              // texto de la etiqueta web
+                    } else if (origen === 'ADMIN') {                            // si lo escribió la consola del servidor
+                        claseTipo = 'msg-system';                               // estilo de aviso
+                        badgeClase = 'badge-origin-sys';                        // color de la etiqueta de consola
+                        badgeLabel = 'CONSOLA';                                 // texto de la etiqueta de consola
+                    }                                                           // fin del if/else
+
+                    if (esPropio) {                                             // si el mensaje es mío
+                        row.className += ' msg-self';                           // va a la derecha con color propio
+                    } else {                                                    // si es de otra persona
+                        row.className += ` ${claseTipo}`;                       // usa el estilo según su origen
+                    }                                                           // fin del if/else
+
+                    // arma el HTML del mensaje: datos (nombre, origen, hora) y burbuja con el texto
+                    row.innerHTML = `
+                        <div class="msg-meta">
+                            <span class="user-name">${escaparHtml(usuario)}</span>
+                            <span class="msg-badge ${badgeClase}">${badgeLabel}</span>
+                            <span class="msg-time">${hora}</span>
+                        </div>
+                        <div class="msg-bubble">${escaparHtml(texto)}</div>
+                    `;
+                }                                                               // fin del if/else principal
+
+                chatBox.appendChild(row);                                       // agrega el mensaje al final del chat
+            });                                                                 // fin del forEach
+
+            if (hayNuevos) {                                                    // si se dibujó algo nuevo
+                reproducirTonoNotificacion();                                   // suena el aviso
+                if (autoScroll) {                                               // si el desplazamiento automático está activo
+                    chatBox.scrollTop = chatBox.scrollHeight;                   // baja hasta el último mensaje
+                }                                                               // fin del if interno
+            }                                                                   // fin del if
+        }                                                                       // fin de renderizarMensajes
+
+        // Envía un mensaje nuevo al servidor (POST /enviar)
+        async function enviarMensaje() {                                        // función asíncrona
+            const texto = msgInput.value.trim();                                // texto escrito, sin espacios en los bordes
+            const usuario = userNick.value.trim() || 'WebUser';                 // alias (o WebUser si está vacío)
+
+            if (!texto) return;                                                 // si no hay texto, no se envía nada
+
+            // RETO: si el WebSocket está abierto, el mensaje viaja por ahí (sin petición HTTP nueva)
+            if (ws && ws.readyState === WebSocket.OPEN) {                       // ¿hay WebSocket abierto?
+                ws.send(JSON.stringify({ usuario: usuario, texto: texto }));    // envía la trama de texto
+                msgInput.value = '';                                            // vacía el campo
+                msgInput.focus();                                               // deja el cursor listo
+                return;                                                         // listo: el servidor lo empujará de vuelta
+            }                                                                   // fin del if
+
+            sendBtn.disabled = true;                                            // desactiva el botón para evitar dobles envíos
+
+            try {                                                               // captura errores de red
+                const res = await fetch(`${SERVER_URL}/enviar`, {               // envía la petición POST
+                    method: 'POST',                                             // método POST
+                    headers: { 'Content-Type': 'application/json' },            // el cuerpo va en formato JSON
+                    body: JSON.stringify({ usuario: usuario, texto: texto })    // convierte los datos a texto JSON
+                });                                                             // fin de la petición
+
+                if (res.ok) {                                                   // si el servidor aceptó el mensaje
+                    msgInput.value = '';                                        // vacía el campo de texto
+                    msgInput.focus();                                           // deja el cursor listo para escribir otra vez
+                    setTimeout(cargarMensajes, 80);                             // actualiza el chat casi de inmediato
+                } else {                                                        // si el servidor respondió con error
+                    alert("El servidor no pudo recibir tu mensaje.");           // avisa al usuario
+                }                                                               // fin del if/else
+            } catch (err) {                                                     // si no hubo conexión
+                alert(`No hay conexion con el servidor: ${err.message}`);       // avisa con el detalle del error
+            } finally {                                                         // esto se ejecuta siempre
+                sendBtn.disabled = false;                                       // vuelve a activar el botón
+            }                                                                   // fin del try/catch/finally
+        }                                                                       // fin de enviarMensaje
+
+        // Cambia la etiqueta de estado según haya o no conexión con el servidor
+        function actualizarEstadoOnline(estaOnline) {                           // recibe true o false
+            if (estaOnline) {                                                   // hay conexión
+                statusIndicator.className = 'badge-pill badge-status-online';   // vuelve al estilo verde
+                statusIndicator.removeAttribute('style');                       // quita el rojo de "sin servidor"
+                statusText.textContent = 'EN LINEA';                            // texto del estado
+            } else {                                                            // no hay conexión
+                statusIndicator.className = 'badge-pill';                       // quita el estilo verde
+                statusIndicator.style.background = 'rgba(244, 63, 94, 0.15)';   // fondo rojizo
+                statusIndicator.style.color = '#fb7185';                        // texto rojo
+                statusIndicator.style.borderColor = 'rgba(244, 63, 94, 0.3)';   // borde rojo
+                statusText.textContent = 'SIN SERVIDOR';                        // texto del estado
+            }                                                                   // fin del if/else
+        }                                                                       // fin de actualizarEstadoOnline
+
+        // Convierte un texto en una versión segura para insertar en HTML (evita que alguien meta código)
+        function escaparHtml(cadena) {                                          // recibe el texto original
+            const div = document.createElement('div');                          // crea un div temporal
+            div.textContent = cadena;                                           // textContent trata todo como texto, no como código
+            return div.innerHTML;                                               // devuelve el texto con los símbolos especiales convertidos
+        }                                                                       // fin de escaparHtml
+
+        // Pone un texto de ejemplo en el campo de mensaje (lo usan los atajos)
+        function insertarTexto(txt) {                                           // recibe el texto del atajo
+            msgInput.value = txt;                                               // lo escribe en el campo
+            msgInput.focus();                                                   // deja el cursor en el campo
+        }                                                                       // fin de insertarTexto
+
+        // Vacía la pantalla del chat (solo en este navegador; el servidor conserva el historial)
+        function limpiarChat() {                                                // función del botón Vaciar
+            chatBox.innerHTML = `
+                <div class="msg-row msg-system">
+                    <div class="msg-bubble">🗑️ Pantalla vaciada (solo en tu navegador).</div>
+                </div>
+            `;                                                                  // deja únicamente un aviso
+            // no se reinicia ultimoIdVisto: así solo aparecerán los mensajes nuevos
+        }                                                                       // fin de limpiarChat
+
+        // Enciende o apaga el aviso sonoro
+        function toggleSonido() {                                               // función del botón de sonido
+            sonidoActivado = !sonidoActivado;                                   // invierte el valor (true <-> false)
+            soundIcon.textContent = sonidoActivado ? '🔔 Sonido' : '🔕 Silencio';   // actualiza el texto del botón
+        }                                                                       // fin de toggleSonido
+
+        // Muestra la ventana de arquitectura
+        function abrirModal() {                                                 // función del botón Arquitectura
+            archModal.style.display = 'flex';                                   // la capa pasa de oculta a visible
+        }                                                                       // fin de abrirModal
+
+        // Oculta la ventana de arquitectura
+        function cerrarModal() {                                                // función del botón ×
+            archModal.style.display = 'none';                                   // vuelve a ocultarla
+        }                                                                       // fin de cerrarModal
+
+        // Cierra la ventana si se hace clic en la zona oscura de afuera
+        function cerrarModalClickAfuera(e) {                                    // recibe el evento del clic
+            if (e.target === archModal) cerrarModal();                          // solo si el clic fue en el fondo y no dentro de la tarjeta
+        }                                                                       // fin de cerrarModalClickAfuera
+
+        // ===== WEBSOCKET (RETO AVANZADO) =====
+        // Polling de RESPALDO: solo corre cuando no hay WebSocket (servidor viejo o conexión caída)
+        function iniciarPolling() {                                             // enciende el polling
+            if (!pollTimer) pollTimer = setInterval(cargarMensajes, 1500);      // consulta cada 1,5 s
+        }                                                                       // fin de iniciarPolling
+
+        function detenerPolling() {                                             // apaga el polling
+            if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }      // cancela el temporizador
+        }                                                                       // fin de detenerPolling
+
+        function programarReconexion() {                                        // reintenta en 3 segundos
+            if (reconectarTimer) return;                                        // ya hay un reintento pendiente
+            reconectarTimer = setTimeout(() => {                                // espera 3 s
+                reconectarTimer = null;                                         // libera el temporizador
+                conectarWebSocket();                                            // vuelve a intentar
+            }, 3000);                                                           // fin del setTimeout
+        }                                                                       // fin de programarReconexion
+
+        function conectarWebSocket() {                                          // abre la conexión WebSocket
+            try {                                                               // new WebSocket puede lanzar excepción
+                ws = new WebSocket(WS_URL);                                     // el navegador hace el handshake (Sec-WebSocket-Key)
+            } catch (e) {                                                       // si falla de inmediato
+                ws = null;                                                      // no hay conexión
+                iniciarPolling();                                               // se usa el respaldo
+                programarReconexion();                                          // y se reintenta luego
+                return;                                                         // sale
+            }                                                                   // fin del try/catch
+
+            ws.onopen = () => {                                                 // handshake completado (101)
+                actualizarEstadoOnline(true);                                   // etiqueta en línea
+                detenerPolling();                                               // ya no hace falta consultar
+                esperandoHistorial = true;                                      // los mensajes nuevos esperan al historial
+                // 1) baja el historial UNA vez; 2) luego muestra lo que llegó mientras tanto (se evitan huecos y repetidos por id)
+                cargarMensajes().finally(() => {                                // finally: se ejecuta con o sin error
+                    esperandoHistorial = false;                                 // ya se puede dibujar en directo
+                    colaWs.forEach(m => renderizarMensajes([m]));               // dibuja los que se acumularon
+                    colaWs = [];                                                // vacía la cola
+                });                                                             // fin del finally
+            };                                                                  // fin de onopen
+
+            ws.onmessage = (ev) => {                                            // el servidor empujó un mensaje
+                try {                                                           // JSON.parse puede fallar
+                    const m = JSON.parse(ev.data);                              // convierte el texto en objeto
+                    if (esperandoHistorial) colaWs.push(m);                     // aún se descarga el historial: se guarda
+                    else renderizarMensajes([m]);                               // si no, se dibuja ya (renderizarMensajes evita repetidos por id)
+                } catch (e) {                                                   // JSON inválido
+                    console.warn("[WebSocket] Trama no valida:", e.message);    // se ignora
+                }                                                               // fin del try/catch
+            };                                                                  // fin de onmessage
+
+            ws.onclose = () => {                                                // se cerró o se cayó la conexión
+                ws = null;                                                      // ya no hay WebSocket
+                actualizarEstadoOnline(false);                                  // etiqueta sin servidor
+                iniciarPolling();                                               // respaldo mientras se reconecta
+                programarReconexion();                                          // reintenta en 3 s
+            };                                                                  // fin de onclose
+
+            ws.onerror = () => { /* onclose se encarga de la recuperación */ }; // los errores terminan en onclose
+        }                                                                       // fin de conectarWebSocket
+
+        // Arranque: intenta WebSocket; si no se puede, el polling de respaldo mantiene el chat vivo
+        cargarMensajes();                                                       // primera carga inmediata del historial
+        conectarWebSocket();                                                    // abre el WebSocket (RETO)
+    </script>
+    <!-- Fin del JavaScript -->
+</body>
+<!-- Fin del contenido visible -->
+</html>
+<!-- Fin del documento -->
